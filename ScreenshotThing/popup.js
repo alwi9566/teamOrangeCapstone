@@ -1,20 +1,14 @@
-document.getElementById("captureBtn").addEventListener("click", () => {
-  chrome.runtime.sendMessage({ action: "capture" }, (response) => {
-    if (response.success) {
-      loadScreenshot();
+document.addEventListener("DOMContentLoaded", () => {
+  // Ask Chrome to capture screenshot when popup opens
+  chrome.tabs.captureVisibleTab({ format: "png" }, (dataUrl) => {
+    if (dataUrl) {
+      const img = document.createElement("img");
+      img.src = dataUrl;
+      const preview = document.getElementById("preview");
+      preview.innerHTML = "";
+      preview.appendChild(img);
     } else {
-      alert("Error: " + response.error);
+      document.getElementById("preview").innerText = "Failed to take screenshot.";
     }
   });
 });
-
-function loadScreenshot() {
-  chrome.storage.local.get("screenshot", (data) => {
-    if (data.screenshot) {
-      document.getElementById("preview").src = data.screenshot;
-    }
-  });
-}
-
-// Load previous screenshot when popup opens
-loadScreenshot();
