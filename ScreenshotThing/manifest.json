@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Screenshot Preview Extension",
+  "version": "1.0",
+  "description": "Takes a screenshot and shows a preview when clicked",
+  "permissions": ["tabs", "activeTab"],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
