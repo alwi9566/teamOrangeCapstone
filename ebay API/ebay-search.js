@@ -40,7 +40,7 @@ async function searchEbay(query, limit = 5) {
     return;
   }
 
-  console.log(`\n🔍 Search results for "${query}":\n`);
+  console.log(`Search results for "${query}":\n`);
   data.itemSummaries.forEach(item => {
     const title = item.title;
     const price = item.price?.value + " " + item.price?.currency;
