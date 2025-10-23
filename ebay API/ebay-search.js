@@ -2,8 +2,8 @@
 import fetch from "node-fetch";
 
 // Replace with your eBay App credentials
-const CLIENT_ID = "ElyCariv-Capstone-PRD-e0ddfec83-ca98af90";
-const CLIENT_SECRET = "PRD-0ddfec83f99c-91e5-417c-9e0c-1e5d";
+const CLIENT_ID = "";
+const CLIENT_SECRET = "";
 
 // Get an OAuth token from eBay
 async function getAccessToken() {
