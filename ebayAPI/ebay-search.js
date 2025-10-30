@@ -47,8 +47,17 @@ async function extractTextFromImage(imagePath, options = {}) {
 
     const text = cleanOutput ? cleanText(result.data.text) : result.data.text;
 
+    const fbTitle = text.match(/^[^$]*/)[0];
+
+    const fbPrice = text.match(/\$\d+(\.\d{2})?/g);
+
+    //const fbCondition = text.match();
+
     return {
       text,
+      fbTitle,
+      fbPrice,
+      //condition,
       confidence: result.data.confidence,
       raw: result.data.text
     };
@@ -59,17 +68,21 @@ async function extractTextFromImage(imagePath, options = {}) {
   
 }
 
+
 // Example usage
 const imagePath = './screenshot.png';
 
 extractTextFromImage(imagePath, {language: 'eng', cleanOutput: true, showProgress: true})
-  .then(({ text, confidence }) => {
-    console.log(typeof text);
+  .then(({ text, confidence, fbTitle, fbPrice}) => {
+    console.log(text);
     console.log(`\n[Confidence: ${confidence.toFixed(1)}%]`);
+    console.log(fbTitle);
+    console.log(fbPrice);
   })
   .catch(error => {
     //console.error('Failed to process image:', error);
   });
+
 
 // ebay-search.js
 import fetch from "node-fetch";
@@ -126,4 +139,4 @@ async function searchEbay(query, limit = 20) {
 }
 
 // Example usage: search for "vintage camera"
-searchEbay("vintage camera", 5).catch(console.error);
+//searchEbay("vintage camera", 5).catch(console.error);
