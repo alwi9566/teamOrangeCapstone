@@ -1,3 +1,76 @@
+// First, install tesseract.js:
+// npm install tesseract.js
+
+// Note: Add "type": "module" to your package.json to use ES6 imports
+import Tesseract from 'tesseract.js';
+
+// Clean and normalize the OCR output
+function cleanText(text) {
+  return text
+    // Remove excessive whitespace
+    .replace(/[ \t]+/g, ' ')
+    // Remove excessive newlines (more than 2)
+    .replace(/\n{3,}/g, '\n\n')
+    // Remove spaces before punctuation
+    .replace(/\s+([.,!?;:])/g, '$1')
+    // Remove leading/trailing whitespace from each line
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0)
+    .join('\n')
+    // Final trim
+    .trim();
+}
+
+// Extract and clean text from image
+async function extractTextFromImage(imagePath, options = {}) {
+  const {
+    language = 'eng',
+    cleanOutput = true,
+    showProgress = false
+  } = options;
+  
+  try {
+    const result = await Tesseract.recognize(
+      imagePath,
+      language,
+      {
+        logger: info => {
+          if (showProgress && info.status === 'recognizing text') {
+            process.stdout.write(`\rProgress: ${Math.round(info.progress * 100)}%`);
+          }
+        }
+      }
+    );
+
+    if (showProgress) console.log('\n');
+
+    const text = cleanOutput ? cleanText(result.data.text) : result.data.text;
+
+    return {
+      text,
+      confidence: result.data.confidence,
+      raw: result.data.text
+    };
+  } catch (error) {
+    console.error('Error during OCR:', error);
+    throw error;
+  }
+  
+}
+
+// Example usage
+const imagePath = './screenshot.png';
+
+extractTextFromImage(imagePath, {language: 'eng', cleanOutput: true, showProgress: true})
+  .then(({ text, confidence }) => {
+    console.log(typeof text);
+    console.log(`\n[Confidence: ${confidence.toFixed(1)}%]`);
+  })
+  .catch(error => {
+    //console.error('Failed to process image:', error);
+  });
+
 // ebay-search.js
 import fetch from "node-fetch";
 
