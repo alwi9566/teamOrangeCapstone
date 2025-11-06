@@ -1,7 +1,3 @@
-// First, install tesseract.js:
-// npm install tesseract.js
-
-// Note: Add "type": "module" to your package.json to use ES6 imports
 import Tesseract from 'tesseract.js';
 
 // Clean and normalize the OCR output
@@ -24,42 +20,53 @@ function cleanText(text) {
 
 // Extract and clean text from image
 async function extractTextFromImage(imagePath, options = {}) {
-  const {
-    language = 'eng',
-    cleanOutput = true,
-    showProgress = false
-  } = options;
+  // const {
+  //   // set language var to english to be passed to tesseract
+  //   language = 'eng',
+  //   cleanOutput = true,
+  //   showProgress = false
+  // } = options;
   
+  const language = "eng"
+
+  const cleanOutput = true
+
+  // init tesseract 
   try {
     const result = await Tesseract.recognize(
+      // points tesseract to local screenshot directory
       imagePath,
+      // passes language to tesseract
       language,
-      {
-        logger: info => {
-          if (showProgress && info.status === 'recognizing text') {
-            process.stdout.write(`\rProgress: ${Math.round(info.progress * 100)}%`);
-          }
-        }
-      }
+      // {
+      //   logger: info => {
+      //     if (showProgress && info.status === 'recognizing text') {
+      //       process.stdout.write(`\rProgress: ${Math.round(info.progress * 100)}%`);
+      //     }
+      //   }
+      // }
     );
 
-    if (showProgress) console.log('\n');
+    // new line after progress indicator hits 100
+    //if (showProgress) console.log('\n');
 
     const text = cleanOutput ? cleanText(result.data.text) : result.data.text;
 
+
+    // regex to isolate information to later be passed to ebay Browse API
     const fbTitle = text.match(/^[^$]*/)[0];
 
     const fbPrice = text.match(/\$\d+(\.\d{2})?/g);
 
-    //const fbCondition = text.match();
+    const fbCondition = text.split(/Condition\s*(\S+)/)[1];
 
     return {
       text,
       fbTitle,
       fbPrice,
-      //condition,
+      fbCondition,
       confidence: result.data.confidence,
-      raw: result.data.text
+      //raw: result.data.text
     };
   } catch (error) {
     console.error('Error during OCR:', error);
@@ -72,17 +79,32 @@ async function extractTextFromImage(imagePath, options = {}) {
 // Example usage
 const imagePath = './screenshot.png';
 
-extractTextFromImage(imagePath, {language: 'eng', cleanOutput: true, showProgress: true})
-  .then(({ text, confidence, fbTitle, fbPrice}) => {
+extractTextFromImage(imagePath, {language: 'eng', cleanOutput: true})
+  .then(({ text, confidence, fbTitle, fbPrice, fbCondition}) => {
     console.log(text);
     console.log(`\n[Confidence: ${confidence.toFixed(1)}%]`);
     console.log(fbTitle);
     console.log(fbPrice);
+    console.log(fbCondition);
   })
   .catch(error => {
     //console.error('Failed to process image:', error);
   });
 
+
+// 
+async function buildURL (title, price, condition){
+
+  // console.log(title);
+  // console.log(price);
+  // console.log(condition);
+
+  const blankURL = "https://api.ebay.com/buy/browse/v1/item_summary/search?";
+  const ebayURL = blankURL + title;
+  return console.log(ebayURL);
+}
+
+buildURL("Original Game Boy Games", "$100", "Used");
 
 // ebay-search.js
 import fetch from "node-fetch";
