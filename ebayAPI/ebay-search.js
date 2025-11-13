@@ -1,115 +1,6 @@
-import Tesseract from 'tesseract.js';
-
-// Clean and normalize the OCR output
-function cleanText(text) {
-  return text
-    // Remove excessive whitespace
-    .replace(/[ \t]+/g, ' ')
-    // Remove excessive newlines (more than 2)
-    .replace(/\n{3,}/g, '\n\n')
-    // Remove spaces before punctuation
-    .replace(/\s+([.,!?;:])/g, '$1')
-    // Remove leading/trailing whitespace from each line
-    .split('\n')
-    .map(line => line.trim())
-    .filter(line => line.length > 0)
-    .join('\n')
-    // Final trim
-    .trim();
-}
-
-// Extract and clean text from image
-async function extractTextFromImage(imagePath, options = {}) {
-  // const {
-  //   // set language var to english to be passed to tesseract
-  //   language = 'eng',
-  //   cleanOutput = true,
-  //   showProgress = false
-  // } = options;
-  
-  const language = "eng"
-
-  const cleanOutput = true
-
-  // init tesseract 
-  try {
-    const result = await Tesseract.recognize(
-      // points tesseract to local screenshot directory
-      imagePath,
-      // passes language to tesseract
-      language,
-      // {
-      //   logger: info => {
-      //     if (showProgress && info.status === 'recognizing text') {
-      //       process.stdout.write(`\rProgress: ${Math.round(info.progress * 100)}%`);
-      //     }
-      //   }
-      // }
-    );
-
-    // new line after progress indicator hits 100
-    //if (showProgress) console.log('\n');
-
-    const text = cleanOutput ? cleanText(result.data.text) : result.data.text;
-
-
-    // regex to isolate information to later be passed to ebay Browse API
-    const fbTitle = text.match(/^[^$]*/)[0];
-
-    const fbPrice = text.match(/\$\d+(\.\d{2})?/g);
-
-    const fbCondition = text.split(/Condition\s*(\S+)/)[1];
-
-    return {
-      text,
-      fbTitle,
-      fbPrice,
-      fbCondition,
-      confidence: result.data.confidence,
-      //raw: result.data.text
-    };
-  } catch (error) {
-    console.error('Error during OCR:', error);
-    throw error;
-  }
-  
-}
-
-
-// Example usage
-const imagePath = './screenshot.png';
-
-extractTextFromImage(imagePath, {language: 'eng', cleanOutput: true})
-  .then(({ text, confidence, fbTitle, fbPrice, fbCondition}) => {
-    console.log(text);
-    console.log(`\n[Confidence: ${confidence.toFixed(1)}%]`);
-    console.log(fbTitle);
-    console.log(fbPrice);
-    console.log(fbCondition);
-  })
-  .catch(error => {
-    //console.error('Failed to process image:', error);
-  });
-
-
-// 
-async function buildURL (title, price, condition){
-
-  // console.log(title);
-  // console.log(price);
-  // console.log(condition);
-
-  const blankURL = "https://api.ebay.com/buy/browse/v1/item_summary/search?";
-  const ebayURL = blankURL + title;
-  return console.log(ebayURL);
-}
-
-buildURL("Original Game Boy Games", "$100", "Used");
-
-// ebay-search.js
 import fetch from "node-fetch";
 
-// Replace with your eBay App credentials
+// store eBay dev account credentials
 const CLIENT_ID = "ElyCariv-Capstone-PRD-e0ddfec83-ca98af90";
 const CLIENT_SECRET = "PRD-0ddfec83f99c-91e5-417c-9e0c-1e5d";
 
@@ -132,10 +23,9 @@ async function getAccessToken() {
 }
 
 // Search for items using the eBay Browse API
-async function searchEbay(query, limit = 20) {
+async function searchEbay(fbTtitle, limit = 20) {
   const token = await getAccessToken();
-
-  const url = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(query)}&limit=${limit}`;
+  const url = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(fbTitle)}&limit=${limit}`;
   const res = await fetch(url, {
     headers: { Authorization: `Bearer ${token}` }
   });
@@ -160,5 +50,4 @@ async function searchEbay(query, limit = 20) {
   });
 }
 
-// Example usage: search for "vintage camera"
-//searchEbay("vintage camera", 5).catch(console.error);
+searchEbay("vintage camera", 5).catch(console.error);
