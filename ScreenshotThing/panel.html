@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="panel.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Inter, sans-serif;
+      background: #111;
+      color: #eee;
+      padding: 16px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 26px;
+      font-weight: 800;
+      color: #f7ec41;
+    }
+
+    .close-btn {
+      font-size: 20px;
+      cursor: pointer;
+      color: #bbb;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      padding: 8px 18px;
+      border-radius: 24px;
+      background: #222;
+      color: #bbb;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: #5f3df7;
+      color: #fff;
+      border: 2px solid #f7ec41;
+    }
+
+    .stats {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .stat-box {
+      flex: 1;
+      background: #1a1a1a;
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #f7ec41;
+    }
+
+    .btn {
+      background: #5f3df7;
+      padding: 8px 16px;
+      border-radius: 10px;
+      color: white;
+      display: inline-block;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+
+    .listing {
+      display: flex;
+      gap: 12px;
+      background: #1a1a1a;
+      padding: 10px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+    }
+
+    .listing img {
+      width: 75px;
+      height: 75px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .listing-title {
+      font-size: 16px;
+      margin-top: 4px;
+    }
+
+    .listing-price {
+      color: #f7ec41;
+      font-weight: 700;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">RAVEN</div>
+    <div class="close-btn" onclick="window.parent.document.getElementById('raven-panel').remove()">
+      ✕
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active">All</div>
+    <div class="tab">Craigslist</div>
+    <div class="tab">Ebay</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-box">
+      <div class="stat-value">128</div>
+      Listings Found
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">$140.42</div>
+      Average Price
+    </div>
+  </div>
+
+  <div class="btn">View All Listings</div>
+
+  <div class="listing">
+    <img src="https://via.placeholder.com/75">
+    <div>
+      <div class="listing-price">$125.00</div>
+      <div class="listing-title">Nike SB Dunk Low ‘Matcha’</div>
+    </div>
+  </div>
+
+  <div class="listing">
+    <img src="https://via.placeholder.com/75">
+    <div>
+      <div class="listing-price">$159.00</div>
+      <div class="listing-title">Nike SB Matcha</div>
+    </div>
+  </div>
+
+  <div class="listing">
+    <img src="https://via.placeholder.com/75">
+    <div>
+      <div class="listing-price">$139.00</div>
+      <div class="listing-title">Nike SB Dunks</div>
+    </div>
+  </div>
+
+</body>
+</html>
+
+

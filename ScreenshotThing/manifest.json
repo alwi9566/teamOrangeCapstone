@@ -1,10 +1,20 @@
 {
   "manifest_version": 3,
-  "name": "Screenshot Preview Extension",
+  "name": "Raven — Deal Scanner",
   "version": "1.0",
-  "description": "Takes a screenshot and shows a preview when clicked",
-  "permissions": ["tabs", "activeTab"],
+  "description": "Scans listings and shows price comparisons.",
+  "permissions": ["activeTab", "scripting"],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
-    "default_popup": "popup.html"
-  }
+    "default_title": "Open Raven"
+  },
+  "host_permissions": ["<all_urls>"],
+  "web_accessible_resources": [
+    {
+      "resources": ["panel.html", "panel.css"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

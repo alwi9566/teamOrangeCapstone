@@ -1,0 +1,17 @@
+/* Styles that apply to the iframe container in the webpage */
+iframe#raven-panel {
+  position: fixed !important;
+  bottom: 20px;
+  left: 20px;
+
+  width: 380px;
+  height: 600px;
+
+  border: none;
+  border-radius: 16px;
+
+  z-index: 999999999; /* Keep above everything */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+
+  background: transparent;
+}
