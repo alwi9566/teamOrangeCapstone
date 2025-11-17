@@ -4,8 +4,7 @@
   "version": "1.0",
   "description": "Shows a floating Raven panel.",
   "action": {
-    "default_popup": "popup.html",
-    "default_icon": "icon.png"
+    "default_popup": "popup.html"
   },
   "permissions": ["scripting", "activeTab"],
   "host_permissions": ["<all_urls>"],
