@@ -1,15 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "Raven — Deal Scanner",
+  "name": "Raven Deal Scanner",
   "version": "1.0",
-  "description": "Scans listings and shows price comparisons.",
-  "permissions": ["activeTab", "scripting"],
-  "background": {
-    "service_worker": "background.js"
-  },
+  "description": "Shows a floating Raven panel.",
   "action": {
-    "default_title": "Open Raven"
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
   },
+  "permissions": ["scripting", "activeTab"],
   "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {

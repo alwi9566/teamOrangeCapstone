@@ -1,13 +1,14 @@
-// Remove existing panel if it exists (toggle behavior)
-const existing = document.getElementById("raven-panel");
-if (existing) {
-  existing.remove();
-  return;
-}
+(function () {
+  // If already present → remove (toggle behavior)
+  const existing = document.getElementById("raven-panel");
+  if (existing) {
+    existing.remove();
+    return;
+  }
 
-// Create container
-const panel = document.createElement("iframe");
-panel.src = chrome.runtime.getURL("panel.html");
-panel.id = "raven-panel";
+  const iframe = document.createElement("iframe");
+  iframe.src = chrome.runtime.getURL("panel.html");
+  iframe.id = "raven-panel";
 
-document.body.appendChild(panel);
+  document.body.appendChild(iframe);
+})();

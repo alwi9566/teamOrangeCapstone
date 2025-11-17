@@ -1,0 +1,25 @@
+body {
+  margin: 0;
+  width: 260px;
+  padding: 16px;
+  font-family: Arial, sans-serif;
+  background: #151515;
+  color: white;
+}
+
+.logo {
+  margin: 0 0 16px;
+  font-size: 22px;
+  color: #f7ec41;
+}
+
+.primary-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #5f3df7;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+}
