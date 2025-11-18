@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "RAVEN - Marketplace Finder",
+  "version": "1.0.0",
+  "description": "Find and track marketplace listings across Craigslist and Ebay",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "storage"
+  ]
+}

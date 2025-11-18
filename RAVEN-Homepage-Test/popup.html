@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAVEN</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1 class="logo">RAVEN</h1>
+      <button class="close-btn" id="closeBtn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="all">All</button>
+      <button class="tab" data-tab="craigslist">Craigslist</button>
+      <button class="tab" data-tab="ebay">Ebay</button>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="listingsCount">128</div>
+        <div class="stat-label">Listings Found</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="avgPrice">$140.42</div>
+        <div class="stat-label">Average Price</div>
+      </div>
+    </div>
+
+    <!-- Section Header -->
+    <div class="section-header">
+      <h2 class="section-title">Top Listings</h2>
+      <button class="view-all-btn" id="viewAllBtn">View All Listings</button>
+    </div>
+
+    <!-- Listings -->
+    <div class="listings" id="listingsContainer">
+      <!-- Listings will be inserted here by JavaScript -->
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
