@@ -1,6 +1,7 @@
+// call tesseract.js library
 const Tesseract = require('tesseract.js');
 
-// Use native fetch if available (Node 18+), otherwise require node-fetch
+// Use native fetch if available, otherwise require node-fetch (some node libraries want different versions)
 const fetch = globalThis.fetch || require('node-fetch');
 
 // eBay API credentials
@@ -23,19 +24,24 @@ function cleanText(text) {
 
 // Extract text from image using Tesseract
 async function extractTextFromImage(imagePath, options = {}) {
+  // set expected language to english
   const language = options.language || "eng";
   const cleanOutput = options.cleanOutput !== false;
 
   try {
+    // wait for tesseract.recognize 
     const result = await Tesseract.recognize(imagePath, language);
+
+    //
     const text = cleanOutput ? cleanText(result.data.text) : result.data.text;
 
     // Extract relevant information
     const fbTitle = text.match(/^[^$]*/)[0].trim();
-    const fbTemp = text.match(/\$\d+\.?\d*/g);
-    const fbPrice = fbTemp[0];
+    const fbPriceArray = text.match(/\$\d+\.?\d*/g);
+
+    // select the first price in the fbPriceArray and set as main fbPrice
+    const fbPrice = fbPriceArray[0];
     const fbCondition = text.split(/Condition\s*(\S+)/)[1];
-    //console.log("Cleaned price: " + typeof(fbPrice[0]));
 
     return {
       text,
@@ -45,9 +51,11 @@ async function extractTextFromImage(imagePath, options = {}) {
       confidence: result.data.confidence,
       raw: result.data.text
     };
-  } catch (error) {
-    console.error('Error during OCR:', error);
-    throw error;
+  } 
+  // handle any errors during fetch
+  catch (error) {
+  console.error('Tesseract OCR Error', error);
+  throw error;
   }
 }
 
@@ -55,7 +63,9 @@ async function extractTextFromImage(imagePath, options = {}) {
 async function getAccessToken() {
   const auth = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64");
 
+  // wait fot the oath token to return
   const res = await fetch("https://api.ebay.com/identity/v1/oauth2/token", {
+    
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -64,31 +74,42 @@ async function getAccessToken() {
     body: "grant_type=client_credentials&scope=https://api.ebay.com/oauth/api_scope"
   });
 
-  if (!res.ok) throw new Error(`Token request failed: ${res.statusText}`);
+
+
+
+  // if (!res.ok) throw new Error(`Token request failed: ${res.statusText}`);
+
+
+
   const data = await res.json();
   return data.access_token;
 }
 
 // Search eBay using extracted data
 async function searchEbay(fbTitle, fbPrice, fbCondition, limit = 20) {
+  // wait for getAccessToken to return token
   const token = await getAccessToken();
-  const url = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(fbTitle)}&limit=${limit}`;
-  
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${token}`}
-  });
 
+  // build url using fbTitle and a limit for returned queries
+  const url = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(fbTitle)}&filter=price:[${fbPrice}..${fbPrice}],conditions:${fbCondition}&limit=${limit}`;
+  
+
+  const res = await fetch(url, {headers: { Authorization: `Bearer ${token}`}});
+
+  // if query fails, throw error
   if (!res.ok) throw new Error(`Search failed: ${res.statusText}`);
   const data = await res.json();
 
+  // returned JSON is empty, return error: no results found
   if (!data.itemSummaries) {
     console.log("No results found.");
     return [];
   }
 
-  console.log(`\n=== Search results for "${fbTitle}" ===`);
-  console.log(`Extracted Price: ${fbPrice || 'N/A'}`);
-  console.log(`Extracted Condition: ${fbCondition || 'N/A'}\n`);
+  // return data extracted from facebook to console
+  // console.log(`\n=== Search results for "${fbTitle}" ===`);
+  // console.log(`Extracted Price: ${fbPrice || 'N/A'}`);
+  // console.log(`Extracted Condition: ${fbCondition || 'N/A'}\n`);
 
   data.itemSummaries.forEach((item, index) => {
     const title = item.title;
@@ -123,7 +144,8 @@ async function main() {
     //console.log(`OCR Confidence: ${confidence.toFixed(1)}%`);
     console.log('Extracted Title: ' + fbTitle);
     console.log('Extracted Price: ' + fbPrice);
-    
+    console.log('Extracted Condition: ' + fbCondition);
+
     console.log('Searching eBay...');
     await searchEbay(fbTitle, fbPrice, fbCondition, 10);
 
