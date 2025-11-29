@@ -1,43 +1,25 @@
 async function tesseract_extract(path){
-    //import tesseract.js as worker
     const {createWorker} = require('tesseract.js');
-
-    //initialize worker, passing english as detection language
     const worker = await createWorker('eng');
-
-    (async () => {
 
     const {data:{text}} = await worker.recognize(path);
 
-    //for debugging purposes
-    //console.log(text);
-
-    //terminate worker
     await worker.terminate();
 
-    //extract title using text before first dollar sign
     const facebook_title = text.match(/^[^$]*/)[0].trim();
-    //extract price using digits immediately following first dollar sign
     const facebook_price = text.match(/\$\d+\.?\d*/g)[0];
-    
     const facebook_condition = text.split(/Condition\s*(\S+)/)[1];
-    //debugging 
-    //console.log(facebook_title);
-    //console.log(facebook_price);
-    //console.log(facebook_condition);
 
-    //cleaned and isolated elements of the facebook listing
+    console.log(facebook_title);
+    console.log(facebook_price);
+    console.log(facebook_condition);
+
     return {
         facebook_title,
         facebook_price,
         facebook_condition
-    }
-
-})();
+    };
 }
-
-//call OCR text detection function
-//tesseract_extract('screenshot.png');
 
 //credentials associated with eBay developer account
 const client_id = 'ElyCariv-Capstone-PRD-e0ddfec83-ca98af90';
@@ -49,7 +31,7 @@ async function generateToken (id, secret){
     const oauth_url = 'https://api.ebay.com/identity/v1/oauth2/token';
 
     const token_response = await fetch("https://api.ebay.com/identity/v1/oauth2/token", {
-        method: "POST", 
+        method: "POST",  
         headers:{"Content-Type": "application/x-www-form-urlencoded", "Authorization": `Basic ${credentials}`},
         body:'grant_type=client_credentials&scope=https://api.ebay.com/oauth/api_scope'
     });
@@ -65,7 +47,6 @@ async function generateToken (id, secret){
     return token.access_token;
 };
 
-
 //call token generation for debugging
 //generateToken();
 
@@ -80,40 +61,58 @@ async function ebaySearch(title, price, condition, limit){
     //fetch API response, passing token and storing as variable "response"
     const response = await fetch (url, {headers: { Authorization: `Bearer ${token}`}});
 
-    const data = response.json;
-    console.log(JSON.stringify(data));
+    const data = await response.json();
 
-    //for debugging 
-    //console.log(response);
+    if (data.itemSummaries) {
+        data.itemSummaries.forEach((item, index) => {
+            const title = item.title;
+            const brand = item.brand || 'N/A';
+            const price = item.price?.value + " " + item.price?.currency;
+            const url = item.itemWebUrl;
+            const imageUrl = item.image.imageUrl;
+            const condition = item.condition || 'N/A';
+            
+            console.log(`${index + 1}. ${title}`);
+            console.log(`Brand: ${brand}`);
+            console.log(`Price: ${price}`);
+            console.log(`Condition: ${condition}`);
+            console.log(`URL: ${url}`);
+            console.log(`Image URL: ${imageUrl}`);
+        });
+    } else {
+        console.log('No items found or error in response:', data);
+    }
+
+    //console.log(data.itemSummaries);
+    return data.itemSummaries;
 }
-
-//call ebay search for debugging
-ebaySearch('Apple iPad Pro', '$200', 'New', 10);
 
 //main function
 async function main(){
 
     //define screenshot patch
-    const image_path = './screenshot.png';
+    //const image_path = 'screenshot.png';
 
     //define eBay query limit
     const limit = 10;
 
     //for debugging
-    console.log('Extracting text form image...');
+    console.log('Extracting text from image...');
+    const text = await tesseract_extract('screenshot.png');
+    //console.log(text);
 
     //call tesseract_extract and store responses as title, price, and condition
-    const {title, price, condition} = await tesseract_extract(image_path);
-    console.log(title);
-    console.log(price);
-    console.log(condition);
+    const { facebook_title, facebook_price, facebook_condition } = await tesseract_extract('screenshot.png');
+    console.log(facebook_title);
+    console.log(facebook_price);
+    console.log(facebook_condition);
 
     //for debugging
     console.log('Searching eBay...');
 
     //run eBay search using title, price, condition information from facebook, and query limit defined in main();
-    await ebaySearch(title, price, condition, limit);
+    await ebaySearch(facebook_title, facebook_price, facebook_condition, 10);
 }
 
 //call main (final debugging step)
-//main();
+main();
